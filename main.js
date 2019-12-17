@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 'use strict';
 const BinarySearchTree = require('./bst');
-
 function main() {
 	const BST = new BinarySearchTree();
 
@@ -15,12 +14,24 @@ function main() {
 	// BST.insert(7);
 
 	// let nodes = 'EASYQUESTION'.split('');
-	let nodes = '154328769'.split('');
+	let nodes = '1 5 4 3 2 8 7 6 9 8 10'.split(' ').map((x) => Number(x));
+	/*
+       1
+        \
+         5
+        / \
+       4   8 
+      /   / \
+     3   7   9
+    /   / \   \ 
+   2   6   8   10
+
+  */
 	for (let node of nodes) {
 		BST.insert(node);
 	}
 	console.log(findThirdLargest(BST));
-	console.log(isBalancedBST(BST));
+	console.log(findNthLargest(BST, 3));
 }
 //4 What does it do
 function tree(t) {
@@ -109,6 +120,28 @@ function findThirdLargest(tree) {
 	throw new Error('Tree must have at least three nodes');
 }
 
+function findNthLargest(tree, n = 3, root = true) {
+	if (!tree) return null;
+	let right = findNthLargest(tree.right, n, false);
+	let arr = [];
+	if (Array.isArray(right)) {
+		if (right.length >= n) return right[n - 1];
+		arr = [ ...right ];
+	} else if (right !== null) {
+		return right;
+	}
+	arr = [ ...arr, tree.key ];
+	let left = findNthLargest(tree.left, n, false);
+	if (Array.isArray(left)) {
+		arr = [ ...arr, ...left ];
+	} else if (left !== null) {
+		return left;
+	}
+	if (arr.length >= n) return arr[n - 1];
+	if (!root) return arr;
+	throw new Error('Tree must have at least three nodes');
+}
+
 /* 
   checks if BST is balanced
   no 2 leaves differ in dist from root by >1
@@ -141,4 +174,43 @@ function isBalancedBST(node, count = 0) {
 	}
 }
 
+/*
+  compare two arrays to see if identical BSTs
+  function identicalBST(arr1, arr2)
+  compare length of arrays, if !== return false
+  check root to see if ===
+    create array for arr1 left/right & arr2 left/right
+    then compare to see if they are equal
+*/
+function identicalBST(arr1, arr2) {
+	if (arr1.length !== arr2.length) return false;
+
+	if (arr1[0] === arr2[0]) {
+		//if array lengths === 0 then they will be empty and will produce empty arrays/trees
+		if (arr1.length < 2) return true;
+		let arr1Left = [];
+		let arr1Right = [];
+		let arr2Left = [];
+		let arr2Right = [];
+
+		for (let i = 1; i < arr1.length; i++) {
+			if (arr1[i] < arr1[0]) {
+				arr1Left.push(arr1[i]);
+			} else {
+				arr1Right.push(arr1[i]);
+			}
+		}
+		for (let i = 1; i < arr2.length; i++) {
+			if (arr2[i] < arr2[0]) {
+				arr2Left.push(arr2[i]);
+			} else {
+				arr2Right.push(arr2[i]);
+			}
+		}
+		return identicalBST(arr1Left, arr2Left) && identicalBST(arr1Right, arr2Right);
+	}
+	return false;
+}
+//console.log(identicalBST([ 3, 2, 1 ], [ 3, 2, 1 ]));
+//console.log(identicalBST([ 3, 5, 4, 6, 1, 0, 2, 6 ], [ 3, 1, 5, 2, 4, 6, 0 ]));
 main();
