@@ -9,6 +9,9 @@ class BinarySearchTree {
 		this.right = null;
 	}
 	insert(key, value) {
+		if (value === null) {
+			value = key;
+		}
 		if (this.key == null) {
 			this.key = key;
 			this.value = value;
@@ -90,3 +93,5 @@ class BinarySearchTree {
 		return this.left._findMin();
 	}
 }
+
+module.exports = BinarySearchTree;
