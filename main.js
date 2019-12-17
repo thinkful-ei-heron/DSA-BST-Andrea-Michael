@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 'use strict';
 const BinarySearchTree = require('./bst');
-
+let counter = 0;
 function main() {
   const BST = new BinarySearchTree();
 
@@ -15,11 +15,25 @@ function main() {
   // BST.insert(7);
 
   // let nodes = 'EASYQUESTION'.split('');
-  let nodes = '154328769'.split('');
+  let nodes = '1 5 4 3 2 8 7 6 9 8 10'.split(' ').map(x => Number(x));
+  /*
+       1
+        \
+         5
+        / \
+       4   8 
+      /   / \
+     3   7   9
+    /   / \   \ 
+   2   6   8   10
+
+  */
   for (let node of nodes) {
     BST.insert(node);
   }
   console.log(findThirdLargest(BST));
+  counter = 0;
+  console.log(findNthLargest(BST, 3));
 }
 //4 What does it do
 function tree(t) {
@@ -105,6 +119,29 @@ function findThirdLargest(tree) {
 
   //if largest node has no left subtree and no left sibling and no grandparent, tree has at most two elements
 
+  throw new Error('Tree must have at least three nodes');
+}
+function findNthLargest(tree, n = 3, root = true) {
+  if (!tree) return null;
+  console.log(tree.key);
+  let right = findNthLargest(tree.right, n, false);
+  let arr = [];
+  if (Array.isArray(right)) {
+    if (right.length >= n) return right[n - 1];
+    arr = [...right];
+  } else if (right !== null) {
+    return right;
+  }
+  arr = [...arr, tree.key];
+  let left = findNthLargest(tree.left, n, false);
+  if (Array.isArray(left)) {
+    arr = [...arr, ...left];
+  } else if (left !== null) {
+    return left;
+  }
+  console.log(arr);
+  if (arr.length >= n) return arr[n - 1];
+  if (!root) return arr;
   throw new Error('Tree must have at least three nodes');
 }
 
